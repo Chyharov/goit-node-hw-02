@@ -20,7 +20,7 @@ const getContactById = async (contactId) => {
     );
 
     if (!contact) {
-      throw new Error("No contact found with the given id");
+      throw new Error(404, "Contact not found");
     }
 
     return contact;
@@ -38,7 +38,7 @@ const removeContact = async (contactId) => {
     );
 
     if (contactIndex === -1) {
-      throw new Error("No contact found");
+      throw new Error("Contact not found");
     }
 
     const [removedContact] = contacts.splice(contactIndex, 1);
@@ -64,21 +64,21 @@ const addContact = async (body) => {
   }
 };
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (id, body) => {
   const { name, email, phone } = body;
 
   try {
     const contacts = await listContacts();
 
     const contactIndex = contacts.findIndex(
-      (contact) => contact.id === String(contactId)
+      (contact) => contact.id === String(id)
     );
 
     if (contactIndex === -1) {
-      throw new Error("No contact found");
+      throw new Error("Contact not found");
     }
 
-    contacts[contactIndex] = { contactId, name, email, phone };
+    contacts[contactIndex] = { id, name, email, phone };
 
     fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
