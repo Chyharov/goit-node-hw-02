@@ -1,25 +1,25 @@
-const express = require("express");
-const logger = require("morgan");
-const cors = require("cors");
-
-const contactsRouter = require("./routes/api/contacts");
+const express = require('express');
+const logger = require('morgan');
+const { contactsRouter } = require('./controllers');
+const cors = require('cors');
+require('./config');
 
 const app = express();
 
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-app.use(logger(formatsLogger));
-app.use(cors());
+app.use(logger('dev'));
 app.use(express.json());
+app.use(cors());
 
-app.use("/api/contacts", contactsRouter);
+app.use('/api/contacts', contactsRouter);
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Not found" });
+app.use(async function (req, res) {
+    res.status(404).send('<h1>Page Not Found</h1>');
 });
 
-app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message });
+app.use(function (err, req, res, next) {
+    const { status = 500, message = 'Internal server error' } = err;
+    console.error(err);
+    res.status(status).json({ message });
 });
 
 module.exports = app;
