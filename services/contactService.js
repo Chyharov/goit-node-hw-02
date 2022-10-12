@@ -15,8 +15,15 @@ async function getContactById(id) {
     return contact;
 }
 
-async function getContacts() {
-    return await Contact.find();
+async function getContacts({ owner, limit = 50, offset = 0 }) {
+    // return await Contact.find({ owner })
+    //     .limit(limit)
+    //     .skip(offset)
+    //     .populate('owner', '-password');
+    return await Contact.find({ owner })
+        .limit(limit)
+        .skip(offset)
+        .populate('owner', '-password');
 }
 
 async function removeContact(id) {

@@ -12,12 +12,19 @@ const {
     objectIdSchema,
     updateStatusContactSchema,
 } = require('../schemas');
+const { validateSchema } = require('../helpers');
+const { checkAuth } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', async function (req, res, next) {
+router.get('/', checkAuth, async function (req, res, next) {
     try {
-        const contacts = await getContacts();
+        const { limit, offset } = req.query;
+        const contacts = await getContacts({
+            owner: req.user.id,
+            limit,
+            offset,
+        });
 
         res.json(contacts);
     } catch (error) {
@@ -25,16 +32,13 @@ router.get('/', async function (req, res, next) {
     }
 });
 
-router.post('/', async function (req, res, next) {
+router.post('/', checkAuth, async function (req, res, next) {
     try {
-        const { error } = createContactSchema.validate(req.body);
+        const { user } = req;
 
-        if (error) {
-            console.error(error);
-            next(error);
-        }
+        validateSchema(createContactSchema, req.body);
 
-        const contact = await createContact(req.body);
+        const contact = await createContact({ ...req.body, owner: user.id });
 
         res.status(201).json(contact);
     } catch (error) {
@@ -44,12 +48,7 @@ router.post('/', async function (req, res, next) {
 
 router.get('/:id', async function (req, res, next) {
     try {
-        const { error } = objectIdSchema.validate(req.params.id);
-
-        if (error) {
-            console.error(error);
-            next(error);
-        }
+        validateSchema(objectIdSchema, req.params.id);
 
         const contact = await getContactById(req.params.id);
 
@@ -61,12 +60,7 @@ router.get('/:id', async function (req, res, next) {
 
 router.delete('/:id', async function (req, res, next) {
     try {
-        const { error } = objectIdSchema.validate(req.params.id);
-
-        if (error) {
-            console.error(error);
-            next(error);
-        }
+        validateSchema(objectIdSchema, req.params.id);
 
         await removeContact(req.params.id);
 
@@ -78,19 +72,9 @@ router.delete('/:id', async function (req, res, next) {
 
 router.put('/:id', async function (req, res, next) {
     try {
-        const { error: idError } = objectIdSchema.validate(req.params.id);
+        validateSchema(objectIdSchema, req.params.id);
 
-        if (idError) {
-            console.error(idError);
-            next(idError);
-        }
-
-        const { error: bodyError } = createContactSchema.validate(req.body);
-
-        if (bodyError) {
-            console.error(bodyError);
-            next(bodyError);
-        }
+        validateSchema(createContactSchema, req.body);
 
         const contact = await updateContact(req.params.id, req.body);
 
@@ -102,21 +86,9 @@ router.put('/:id', async function (req, res, next) {
 
 router.patch('/:id/favorite', async function (req, res, next) {
     try {
-        const { error: idError } = objectIdSchema.validate(req.params.id);
+        validateSchema(objectIdSchema, req.params.id);
 
-        if (idError) {
-            console.error(idError);
-            next(idError);
-        }
-
-        const { error: bodyError } = updateStatusContactSchema.validate(
-            req.body
-        );
-
-        if (bodyError) {
-            console.error(bodyError);
-            next(bodyError);
-        }
+        validateSchema(updateStatusContactSchema, req.body);
 
         const contact = await updateStatusContact(req.params.id, req.body);
 
