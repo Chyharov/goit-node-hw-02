@@ -4,6 +4,7 @@ const { notValidCredentials } = require('../constants');
 const { jwtSecret } = require('../config');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
 
 async function register(body) {
     const { email, password } = body;
@@ -19,6 +20,7 @@ async function register(body) {
     const result = await User.create({
         email,
         password: hash,
+        avatarURL: gravatar.url(email),
     });
 
     const { password: newUserPassword, ...newUser } = result.toObject();
