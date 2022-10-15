@@ -1,6 +1,10 @@
 const express = require('express');
 const logger = require('morgan');
-const { contactsRouter, authController } = require('./controllers');
+const {
+    contactController,
+    authController,
+    userController,
+} = require('./controllers');
 const cors = require('cors');
 require('./config');
 
@@ -9,9 +13,11 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors());
+app.use(express.static('public'));
 
 app.use('/api/auth', authController);
-app.use('/api/contacts', contactsRouter);
+app.use('/api/contacts', contactController);
+app.use('/api/users', userController);
 
 app.use(async function (req, res) {
     res.status(404).send('<h1>Page Not Found</h1>');

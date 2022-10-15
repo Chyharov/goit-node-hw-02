@@ -5,7 +5,6 @@ const {
     getContacts,
     removeContact,
     updateContact,
-    updateStatusContact,
 } = require('../services');
 const {
     createContactSchema,
@@ -90,7 +89,7 @@ router.patch('/:id/favorite', async function (req, res, next) {
 
         validateSchema(updateStatusContactSchema, req.body);
 
-        const contact = await updateStatusContact(req.params.id, req.body);
+        const contact = await updateContact(req.params.id, req.body);
 
         res.json(contact);
     } catch (error) {

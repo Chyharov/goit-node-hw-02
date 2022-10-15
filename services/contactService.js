@@ -16,10 +16,6 @@ async function getContactById(id) {
 }
 
 async function getContacts({ owner, limit = 50, offset = 0 }) {
-    // return await Contact.find({ owner })
-    //     .limit(limit)
-    //     .skip(offset)
-    //     .populate('owner', '-password');
     return await Contact.find({ owner })
         .limit(limit)
         .skip(offset)
@@ -29,16 +25,9 @@ async function getContacts({ owner, limit = 50, offset = 0 }) {
 async function removeContact(id) {
     await getContactById(id);
     const removeContact = await Contact.findByIdAndDelete(id);
-    console.log(removeContact);
 }
 
 async function updateContact(id, body) {
-    await getContactById(id);
-
-    return Contact.findByIdAndUpdate(id, body, { new: true });
-}
-
-async function updateStatusContact(id, body) {
     await getContactById(id);
 
     return Contact.findByIdAndUpdate(id, body, { new: true });
@@ -50,5 +39,4 @@ module.exports = {
     getContacts,
     removeContact,
     updateContact,
-    updateStatusContact,
 };

@@ -6,16 +6,13 @@ const { User } = require('../models');
 async function checkAuth(req, res, next) {
     try {
         const { authorization = '' } = req.headers;
-        // console.log(authorization);
         const [bearer, token] = authorization.split(' ');
-        // console.log(token);
 
         if (bearer !== 'Bearer') {
             throw createError(401, 'Not authorized');
         }
 
         const { id } = jwt.verify(token, jwtSecret);
-        console.log(id);
         const user = await User.findById(id);
 
         if (!user || !user.token || token !== user.token) {
