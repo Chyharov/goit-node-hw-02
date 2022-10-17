@@ -10,10 +10,6 @@ const schema = Joi.object({
         .regex(emailRegEx)
         .message(notValidCredentials)
         .required(),
-    // password: Joi.string()
-    //     .regex(passwordRegEx)
-    //     .message(notValidCredentials)
-    //     .required(),
     password: Joi.string().required(),
 });
 
