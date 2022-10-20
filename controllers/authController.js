@@ -1,7 +1,14 @@
 const { Router } = require('express');
 const { validateSchema, createError } = require('../helpers');
-const { registerSchema, loginSchema } = require('../schemas');
-const { register, login, logout, userToken } = require('../services');
+const { registerSchema, loginSchema, emailResetSchema } = require('../schemas');
+const {
+    register,
+    login,
+    logout,
+    userToken,
+    confirmEmail,
+    resendEmail,
+} = require('../services');
 const { checkAuth } = require('../middlewares');
 
 const router = Router();
@@ -65,6 +72,28 @@ router.get('/users/current', checkAuth, async (req, res, next) => {
         res.status(200).json(currentUser);
     } catch (err) {
         next(err);
+    }
+});
+
+router.get('/users/verify/:verificationToken', async (req, res, next) => {
+    try {
+        await confirmEmail(req.params.verificationToken);
+
+        res.status(200).json({ message: 'Verification successful' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/users/verify/', async (req, res, next) => {
+    try {
+        validateSchema(emailResetSchema, req.body);
+
+        await resendEmail(req.body.email);
+
+        res.json({ message: 'Verification email sent' });
+    } catch (error) {
+        next(error);
     }
 });
 

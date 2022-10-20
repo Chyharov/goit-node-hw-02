@@ -8,7 +8,7 @@ function validateSchema(schema, target) {
 
         throw new createError(
             400,
-            'Ошибка от Joi или другой библиотеки  валидации'
+            'Ошибка от Joi или другой библиотеки валидации'
         );
     }
 }
